@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weather App</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #0f172a;
+    color: white;
+    text-align: center;
+    padding: 50px;
+  }
+
+  .container {
+    max-width: 400px;
+    margin: auto;
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 12px;
+  }
+
+  input {
+    width: 70%;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+  }
+
+  button {
+    padding: 10px;
+    border: none;
+    background: #38bdf8;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  .weather {
+    margin-top: 20px;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h2>Weather App 🌦️</h2>
+
+  <input type="text" id="cityInput" placeholder="Enter city">
+  <button onclick="getWeather()">Search</button>
+
+  <div class="weather" id="weatherResult"></div>
+</div>
+
+<script>
+const apiKey = "YOUR_API_KEY_HERE"; // 🔑 Replace with your API key
+
+async function getWeather() {
+  let city = document.getElementById("cityInput").value;
+
+  if (city === "") return;
+
+  let url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+
+  try {
+    let response = await fetch(url);
+    let data = await response.json();
+
+    if (data.cod !== 200) {
+      document.getElementById("weatherResult").innerHTML = "City not found ❌";
+      return;
+    }
+
+    document.getElementById("weatherResult").innerHTML = `
+      <h3>${data.name}</h3>
+      <p>🌡️ Temperature: ${data.main.temp} °C</p>
+      <p>🌥️ Weather: ${data.weather[0].main}</p>
+      <p>💨 Wind Speed: ${data.wind.speed} m/s</p>
+    `;
+  } catch (error) {
+    document.getElementById("weatherResult").innerHTML = "Error fetching data ⚠️";
+  }
+}
+</script>
+
+</body>
+</html>
