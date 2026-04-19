@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Umesh Rajput | Portfolio</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+    body { background: #0f172a; color: #fff; }
+    header { padding: 20px; text-align: center; background: #1e293b; }
+    header h1 { font-size: 2.5rem; }
+    nav { margin-top: 10px; }
+    nav a { margin: 0 10px; color: #38bdf8; text-decoration: none; }
+    section { padding: 40px 20px; text-align: center; }
+    .card { background: #1e293b; padding: 20px; margin: 15px auto; max-width: 600px; border-radius: 12px; }
+    .skills span { display: inline-block; margin: 5px; padding: 8px 12px; background: #38bdf8; color: #000; border-radius: 20px; }
+    button { padding: 10px 20px; border: none; background: #38bdf8; color: #000; cursor: pointer; border-radius: 8px; }
+    footer { background: #1e293b; padding: 20px; text-align: center; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Umesh Rajput</h1>
+  <p>B.Tech IT Student | Static Developer</p>
+  <nav>
+    <a href="#about">About</a>
+    <a href="#skills">Skills</a>
+    <a href="#contact">Contact</a>
+  </nav>
+</header>
+
+<section id="about">
+  <div class="card">
+    <h2>About Me</h2>
+    <p>I am a 2nd year B.Tech student at JSS University in IT branch. I am currently doing an internship at GauravGo as a Static Developer. I enjoy building web projects and improving my coding skills.</p>
+  </div>
+</section>
+
+<section id="skills">
+  <div class="card">
+    <h2>Skills</h2>
+    <div class="skills">
+      <span>C</span>
+      <span>C++</span>
+      <span>JavaScript</span>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="card">
+    <h2>Contact Me</h2>
+    <p>Email: u*****@gmail.com</p>
+    <p>Phone: 90*******</p>
+    <button onclick="showMessage()">Say Hello</button>
+    <p id="msg"></p>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 Umesh Rajput</p>
+</footer>
+
+<script>
+function showMessage() {
+  document.getElementById('msg').innerText = "Thanks for visiting my portfolio!";
+}
+</script>
+
+</body>
+</html>
