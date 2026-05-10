@@ -1,0 +1,147 @@
+const express = require("express");
+const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+
+const app = express();
+app.use(express.json());
+
+// ---------------- DATABASE CONNECTION ----------------
+mongoose
+  .connect("mongodb://127.0.0.1:27017/authDB")
+  .then(() => console.log("MongoDB Connected"))
+  .catch((err) => console.log(err));
+
+// ---------------- USER SCHEMA ----------------
+const userSchema = new mongoose.Schema({
+  name: String,
+  email: String,
+  password: String,
+});
+
+const User = mongoose.model("User", userSchema);
+
+// ---------------- JWT SECRET ----------------
+const JWT_SECRET = "mysecretkey";
+
+// ---------------- REGISTER ROUTE ----------------
+app.post("/register", async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+
+    if (existingUser) {
+      return res.status(400).json({
+        message: "User already exists",
+      });
+    }
+
+    // Hash Password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create User
+    const user = new User({
+      name,
+      email,
+      password: hashedPassword,
+    });
+
+    await user.save();
+
+    res.status(201).json({
+      message: "User Registered Successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+});
+
+// ---------------- LOGIN ROUTE ----------------
+app.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Find User
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(400).json({
+        message: "Invalid Email",
+      });
+    }
+
+    // Compare Password
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return res.status(400).json({
+        message: "Invalid Password",
+      });
+    }
+
+    // Generate JWT Token
+    const token = jwt.sign(
+      { id: user._id, email: user.email },
+      JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    res.json({
+      message: "Login Successful",
+      token,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+});
+
+// ---------------- AUTH MIDDLEWARE ----------------
+const verifyToken = (req, res, next) => {
+  const token = req.headers.authorization;
+
+  if (!token) {
+    return res.status(401).json({
+      message: "Access Denied. No Token Provided",
+    });
+  }
+
+  try {
+    const verified = jwt.verify(token, JWT_SECRET);
+
+    req.user = verified;
+
+    next();
+  } catch (error) {
+    res.status(400).json({
+      message: "Invalid Token",
+    });
+  }
+};
+
+// ---------------- PROTECTED ROUTE ----------------
+app.get("/dashboard", verifyToken, (req, res) => {
+  res.json({
+    message: "Welcome to Protected Dashboard",
+    user: req.user,
+  });
+});
+
+// ---------------- LOGOUT ROUTE ----------------
+app.post("/logout", (req, res) => {
+  res.json({
+    message: "Logout Successful (Delete token on client side)",
+  });
+});
+
+// ---------------- SERVER ----------------
+const PORT = 3000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});
