@@ -1,0 +1,169 @@
+import React, { useState } from "react";
+
+export default function NotesApp() {
+  const [notes, setNotes] = useState([
+    { id: 1, text: "Learn React" },
+    { id: 2, text: "Build Notes App" },
+  ]);
+
+  const [newNote, setNewNote] = useState("");
+  const [editId, setEditId] = useState(null);
+  const [editText, setEditText] = useState("");
+
+  // Add Note
+  const addNote = () => {
+    if (newNote.trim() === "") return;
+
+    const note = {
+      id: Date.now(),
+      text: newNote,
+    };
+
+    setNotes([...notes, note]);
+    setNewNote("");
+  };
+
+  // Delete Note
+  const deleteNote = (id) => {
+    setNotes(notes.filter((note) => note.id !== id));
+  };
+
+  // Start Edit
+  const startEdit = (note) => {
+    setEditId(note.id);
+    setEditText(note.text);
+  };
+
+  // Save Updated Note
+  const updateNote = () => {
+    setNotes(
+      notes.map((note) =>
+        note.id === editId ? { ...note, text: editText } : note
+      )
+    );
+
+    setEditId(null);
+    setEditText("");
+  };
+
+  return (
+    <div style={styles.container}>
+      <h1>Notes Application</h1>
+
+      {/* Add Note */}
+      <div style={styles.inputContainer}>
+        <input
+          type="text"
+          placeholder="Enter note..."
+          value={newNote}
+          onChange={(e) => setNewNote(e.target.value)}
+          style={styles.input}
+        />
+        <button onClick={addNote} style={styles.addBtn}>
+          Add
+        </button>
+      </div>
+
+      {/* Notes List */}
+      {notes.map((note) => (
+        <div key={note.id} style={styles.noteCard}>
+          {editId === note.id ? (
+            <>
+              <input
+                type="text"
+                value={editText}
+                onChange={(e) => setEditText(e.target.value)}
+                style={styles.input}
+              />
+              <button onClick={updateNote} style={styles.updateBtn}>
+                Update
+              </button>
+            </>
+          ) : (
+            <>
+              <p>{note.text}</p>
+
+              <div>
+                <button
+                  onClick={() => startEdit(note)}
+                  style={styles.editBtn}
+                >
+                  Edit
+                </button>
+
+                <button
+                  onClick={() => deleteNote(note.id)}
+                  style={styles.deleteBtn}
+                >
+                  Delete
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+const styles = {
+  container: {
+    width: "400px",
+    margin: "40px auto",
+    fontFamily: "Arial",
+    textAlign: "center",
+  },
+
+  inputContainer: {
+    display: "flex",
+    gap: "10px",
+    marginBottom: "20px",
+  },
+
+  input: {
+    flex: 1,
+    padding: "10px",
+    fontSize: "16px",
+  },
+
+  addBtn: {
+    padding: "10px 15px",
+    backgroundColor: "green",
+    color: "white",
+    border: "none",
+    cursor: "pointer",
+  },
+
+  updateBtn: {
+    padding: "8px 12px",
+    backgroundColor: "blue",
+    color: "white",
+    border: "none",
+    marginTop: "10px",
+    cursor: "pointer",
+  },
+
+  editBtn: {
+    padding: "8px 12px",
+    backgroundColor: "orange",
+    color: "white",
+    border: "none",
+    marginRight: "10px",
+    cursor: "pointer",
+  },
+
+  deleteBtn: {
+    padding: "8px 12px",
+    backgroundColor: "red",
+    color: "white",
+    border: "none",
+    cursor: "pointer",
+  },
+
+  noteCard: {
+    border: "1px solid #ccc",
+    padding: "15px",
+    marginBottom: "10px",
+    borderRadius: "5px",
+  },
+};
